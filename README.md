@@ -1,5 +1,4 @@
-# Orbital2023PlanIt
-Plan It Orbital 2023
+# Orbital 2023 PlanIt #
 In order to run the app, follow these instructions:
 1. Clone the github repository into your laptop's terminal/command prompt: https://github.com/kyledilao777/Orbital2023PlanIt.git 
 2. Download all the dependencies using npx expo install. If it doesn't work, try sudo npm install -g expo-cli. 
