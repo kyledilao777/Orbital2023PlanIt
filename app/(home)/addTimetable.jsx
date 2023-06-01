@@ -3,10 +3,11 @@ import { View, StyleSheet } from "react-native";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/auth";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 
-export default function NewTodo() {
+
+export default function NewTimetable() {
     const [title, setTitle] = useState('');
     const [errMsg, setErrMsg] = useState('');
     const [loading, setLoading] = useState(false);
@@ -33,21 +34,37 @@ export default function NewTodo() {
     }
 
     return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Title: </Text>
-        <TextInput value={title} onChangeText={setTitle} />
+        <Text style={styles.header}> Name your timetable:</Text>
+        <TextInput style={styles.textInput} value={title} onChangeText={setTitle} />
         {errMsg !== '' && <Text>{errMsg}</Text>}
-        <Button 
+        <Link href = "/(new)/existingtimetable">
+            <Button 
                 textColor='black'
                 mode='contained'
-                style={styles.createEvent} 
-                onPress={handleSubmit}>Create Event</Button>
-        {loading && <ActivityIndicator />}
+                style={styles.createTimetable}> Create</Button>
+            {loading && <ActivityIndicator />}
+        </Link>
     </View>;
 }
 
 const styles = StyleSheet.create({
-    createEvent: {
-        width: '40%',
+    header:{
+        marginRight: 73,
+        textAlign: 'left',
+        fontSize: 25,
+        fontWeight: 'bold'
+    },
+
+    textInput: {
+        width: '80%',
+        height: 45,
+        marginTop: -20,
+        marginBottom: 20,
+        backgroundColor: 'transparent',
+        paddingHorizontal:-20,
+        fontSize: 20,
+    },
+    createTimetable: {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#FADF70',
