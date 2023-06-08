@@ -1,8 +1,12 @@
 import { View, StyleSheet } from "react-native";
 import { Text, Button } from 'react-native-paper';
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
+import { useLayoutEffect } from "react";
+import { useState } from "react";
+
 
 export default function HomeScreen() {
+    const [count, setCount] = useState(0);
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
             <Text style={styles.mainText}>You currently have no timetable.</Text>

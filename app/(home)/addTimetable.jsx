@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../contexts/auth";
-import { Link, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 
 
 
@@ -12,7 +12,6 @@ export default function NewTimetable() {
     const [errMsg, setErrMsg] = useState('');
     const [loading, setLoading] = useState(false);
     const { user } = useAuth();
-    const router = useRouter();
 
     const handleSubmit = async () => {
         setErrMsg('');
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     textInput: {
         width: '80%',
         height: 45,
-        marginTop: -20,
+        marginTop: -5,
         marginBottom: 20,
         backgroundColor: 'transparent',
         paddingHorizontal:-20,
