@@ -1,11 +1,6 @@
 import { Stack } from "expo-router";
 
-export const unstable_settings = {
-    initialRouteName: 'login',
-};
-
-// to go back to the login page
-export default function AuthRoot() {
+export default function App() {
     return (
         <Stack
             screenOptions={{
@@ -18,8 +13,7 @@ export default function AuthRoot() {
                 },
             }}
         >
-            <Stack.Screen name ="register" options={{ title: "New User" }} />
-            <Stack.Screen name ="login" options={{ headerShown: false }} />
+        <Stack.Screen name ="addevent" options={{ headerShown:false }} />
         </Stack>
     );
 }

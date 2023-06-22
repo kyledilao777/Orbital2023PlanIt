@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
-import { supabase } from "../../lib/supabase";
-import { useAuth } from "../../contexts/auth";
+import { supabase } from "../../../lib/supabase";
+import { useAuth } from "../../../contexts/auth";
 import { Link, useRouter } from "expo-router";
-
-
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function NewTimetable() {
     const [title, setTitle] = useState('');
@@ -17,11 +16,15 @@ export default function NewTimetable() {
     const handleSubmit = async () => {
         setErrMsg('');
         if (title === '') {
-            setErrMsg('Title cannot be empty! :(')
+            setErrMsg('Title cannot be empty')
             return;
         }
         setLoading(true);
-        const { error } = await supabase.from('events').insert({ event_name: title, user_id: user.id }).select().single();
+        
+        const { error } = await supabase.from('timetables').insert({ 
+            timetable_name: title, 
+            user_id: user.id
+        }).select().single();
 
         if (error != null) {
             setLoading(false);
@@ -30,24 +33,26 @@ export default function NewTimetable() {
             return;
         }
         setLoading(false);
-        router.push('/');
+        router.push('../../(tabsExisting)/existing');
     }
 
-    return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={styles.header}> Name your timetable:</Text>
-        <TextInput style={styles.textInput} value={title} onChangeText={setTitle} />
-        {errMsg !== '' && <Text>{errMsg}</Text>}
-        <Link href = "/(new)/existingtimetable">
-            <Button 
-                textColor='black'
-                mode='contained'
-                style={styles.createTimetable}> Create</Button>
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={styles.header}> Name your timetable:</Text>
+            <TextInput style={styles.textInput} value={title} onChangeText={setTitle} />
+            {errMsg !== '' && <Text>{errMsg}</Text>}
+            <Button onPress={() => handleSubmit()} textColor="black" mode="contained" style={styles.button}> Create </Button>
             {loading && <ActivityIndicator />}
-        </Link>
-    </View>;
+            
+    </View>);
 }
 
 const styles = StyleSheet.create({
+    button:{
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FADF70',
+    },
     header:{
         marginRight: 73,
         textAlign: 'left',
@@ -58,15 +63,14 @@ const styles = StyleSheet.create({
     textInput: {
         width: '80%',
         height: 45,
-        marginTop: -20,
+        marginTop: -5,
         marginBottom: 20,
         backgroundColor: 'transparent',
         paddingHorizontal:-20,
         fontSize: 20,
     },
-    createTimetable: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#FADF70',
+    create: {
+        fontSize: 20,
+        color: "black",
     },
 });

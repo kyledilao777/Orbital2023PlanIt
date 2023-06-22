@@ -1,7 +1,7 @@
 import { Image, View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { supabase } from "../../lib/supabase";
 
 export default function LoginPage() {

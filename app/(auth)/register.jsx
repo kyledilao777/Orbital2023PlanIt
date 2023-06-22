@@ -1,7 +1,18 @@
 import { useState } from "react";
 import { supabase } from "../../lib/supabase";
-import { View, StyleSheet } from "react-native";
+import { useAuth } from "../../contexts/auth";
+import { useRouter } from "expo-router";
+import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { Text, TextInput, ActivityIndicator, Button } from 'react-native-paper';
+import * as ImagePicker from "expo-image-picker"
+
+function ImageViewer({ placeholderImageSource, selectedImage }) {
+    const imageSource = selectedImage !== null
+      ? { uri: selectedImage }
+      : placeholderImageSource;
+  
+    return <Image source={imageSource} style={styles.image} />;
+}
 
 export default function Register() {
     const [fname, setFname] = useState('');
@@ -11,6 +22,9 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
+    const [selectedImage, setSelectedImage] = useState(null);
+    const router  = useRouter();
+    const { user } = useAuth();
 
     const handleSubmit = async () => {
         if (email == '') {
@@ -22,18 +36,79 @@ export default function Register() {
             return;
         }
         setLoading(true);
-        const { error } = await supabase.auth.signUp({ email, password }); // call signup instead
+        
+        const { error1 } = await supabase.auth.signUp({ email, password }); // call signup instead
+
         setLoading(false);
-        if (error) {
-            setErrMsg(error.message);
+        if (error1) {
+            setErrMsg(error1.message);
             return;
         }
     }
+
+    const addProfile = async () => {
+        setErrMsg('');
+        
+        if (fname === '') {
+            setErrMsg('First name cannot be empty')
+            return;
+        }
+
+        if (lname === '') {
+            setErrMsg('Last name cannot be empty')
+            return;
+        }
+
+        if (job === '') {
+            setErrMsg('Occupation cannot be empty')
+            return;
+        }
+
+        const { error } = await supabase.from('profiles').insert({
+            first_name: fname,
+            last_name: lname,
+            occupation: job,
+            email: email,
+            photo_url: selectedImage
+        });
+
+        setLoading(true);
+            
+        if (error != null) {
+            setLoading(false);
+            console.log(error);
+            setErrMsg(error.message);
+            return;
+        }
+        
+        setLoading(false);
+        router.push('../(tabsEmpty)/empty');
+    }
+
+    const pickImageAsync = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          quality: 1,
+        });
+    
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        } else {
+            alert('You did not select any image.');
+        }
+    };
+
+    const imageSource = selectedImage !== null
+    ? { uri: selectedImage }
+    : require('./images/user.jpeg');
 
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
             <Text style={styles.signUpHeader}>Welcome To Plan It!</Text>
             <Text style={styles.subHeader}>Begin your journey with Plan It! today.</Text>
+            <TouchableOpacity onPress={pickImageAsync}>
+                <Image style={styles.imagepicker} source={imageSource}/>
+            </TouchableOpacity>
             <TextInput
                 autoCapitalize='none'
                 placeholder="First Name"
@@ -60,7 +135,7 @@ export default function Register() {
                 style={styles.register} />
             <TextInput
                 autoCapitalize='none'
-                placeholder="Username"
+                placeholder="Email"
                 placeholderTextColor='#9E9E9E'
                 textContentType='emailAddress'
                 value={email}
@@ -79,7 +154,7 @@ export default function Register() {
                 textColor='black'
                 mode='contained'
                 style={styles.createAcc} 
-                onPress={handleSubmit}>Create Account</Button>
+                onPress={() => { addProfile(); handleSubmit();}}>Create Account</Button>
             {errMsg !== "" && <Text>{errMsg}</Text>}
             {loading && <ActivityIndicator />}
         </View>
@@ -91,10 +166,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold', 
         fontSize: 30, 
         alignItems: 'center',
+        marginTop: -50,
         paddingBottom: 5,
     },
     subHeader: {
-        marginBottom: 20,
+        marginBottom: 10,
 
     },
     register: {
@@ -109,6 +185,13 @@ const styles = StyleSheet.create({
     createAcc: {
         marginTop: 20,
         backgroundColor: '#FADF70',
+    },
+    imagepicker: {
+        height:130,
+        width:130,
+        marginTop:10,
+        marginBottom: -10,
+        borderRadius:100
     }
 });
 

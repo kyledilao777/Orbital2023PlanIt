@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
-import { supabase } from "../../lib/supabase";
-import { useAuth } from "../../contexts/auth";
+import { supabase } from "../../../lib/supabase";
+import { useAuth } from "../../../contexts/auth";
 import { useRouter } from "expo-router";
 import { genTimeBlock } from 'react-native-timetable';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -89,7 +89,7 @@ export default function NewEvent() {
         const note = [];
         const startTime = genTimeBlock(day, parseInt(starttime) + 8);
         const endTime = genTimeBlock(day, parseInt(endtime) + 8);
-
+        console.log(user);
         // need to use user.id
         const { error } = await supabase.from('events')
             .insert({
@@ -102,7 +102,7 @@ export default function NewEvent() {
                 extra_descriptions: note
             })
             .select();
-
+            
         if (error != null) {
             setLoading(false);
             console.log(error);
@@ -110,16 +110,23 @@ export default function NewEvent() {
             return;
         }
         setLoading(false);
-        router.push('/existingtimetable'); // auto push back to the root page
+        router.push('../existing'); // auto push back to the root page
     }
-
+/*
     const handleGoBack = () => {
-        router.push("/existingtimetable");
-    };
+        router.push('../existing');
+    };*/
 
     return <View style={styles.container}>
-        <Text>Event Name: </Text>
-        <TextInput value={title} onChangeText={setTitle} />
+        <Text style={styles.header}> Please fill in the details of your new event. </Text>
+        <TextInput 
+            autoCapitalize='none'
+            placeholder="Event Name"
+            placeholderTextColor='#9E9E9E'
+            value={title} 
+            onChangeText={setTitle} 
+            style={styles.inputSearchStyle}
+        />
         {errMsg !== '' && <Text>{errMsg}</Text>}
         <View>
             <Dropdown
@@ -183,59 +190,83 @@ export default function NewEvent() {
                 }}
             />
         </View>
-        <Text>Location: </Text>
-        <TextInput value={location} onChangeText={setLocation} />
-        <Text>Note: e.g. []</Text>
-        <TextInput value={note} onChangeText={setNote} />
-        <Button onPress={handleSubmit}>Submit</Button>
+        <TextInput 
+            autoCapitalize='none'
+            placeholder="Location"
+            placeholderTextColor='#9E9E9E'
+            value={location} 
+            onChangeText={setLocation} 
+            style={styles.inputSearchStyle}
+        />
+        <TextInput 
+            autoCapitalize='none'
+            placeholder="Note (e.g. Remind Zac)"
+            placeholderTextColor='#9E9E9E'
+            value={note} 
+            onChangeText={setNote}
+            style={styles.inputSearchStyle}
+        />        
+        <Button 
+            style={styles.submit} 
+            onPress={handleSubmit}
+            textColor='black'
+            mode='contained'
+        >Submit</Button>
         {loading && <ActivityIndicator />}
-        <Button onPress={handleGoBack}>Go back</Button>
+        
     </View>;
 }
 
+//<Button onPress={handleGoBack}>Go back</Button>
 const styles = StyleSheet.create({
+    header: {
+        fontSize:17,
+        fontWeight:"bold",
+        marginTop:-30,
+        marginBottom:20
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
+        marginTop:-160,
+        marginLeft:20,
+        marginRight:20
+    },
+    inputSearchStyle:{
+        width: '100%',
+        height: 50,
+        backgroundColor: 'transparent',
+        marginTop: 0, 
+        marginBottom: -2,
+        marginLeft:0,
+        fontSize: 20,
     },
     dropdown: {
-        margin: 16,
+        margin: 0,
+        marginLeft:0,
+        marginRight:0,
         height: 50,
         borderBottomColor: 'gray',
         borderBottomWidth: 0.5,
     },
     placeholderStyle: {
-        fontSize: 16,
+        fontSize: 20,
+        color:'#9E9E9E',
+        marginLeft:15
+
     },
     selectedTextStyle: {
-        fontSize: 16,
+        fontSize: 20,
     },
     iconStyle: {
         width: 20,
         height: 20,
     },
-    inputSearchStyle: {
-        height: 40,
-        fontSize: 16,
-    },
+    submit:{
+        width:120,
+        alignItems: 'center',
+        marginLeft:120,
+        marginTop: 25,
+        backgroundColor: '#FADF70'
+    }
 });
-
-/*
-        <Text>Event Name: </Text>
-        <TextInput value={title} onChangeText={setTitle} />
-        {errMsg !== '' && <Text>{errMsg}</Text>}
-        <Text>Day: e.g. "MON"</Text>
-        <TextInput value={day} onChangeText={setDay} />
-        <Text>Start Time: e.g. "21"</Text>
-        <TextInput value={starttime} onChangeText={setStartTime} />
-        {errMsgST !== '' && <Text>{errMsgST}</Text>}
-        <Text>End Time: e.g. "22"</Text>
-        <TextInput value={endtime} onChangeText={setEndTime} />
-        {errMsgET !== '' && <Text>{errMsgET}</Text>}
-        <Text>Location: </Text>
-        <TextInput value={location} onChangeText={setLocation} />
-        <Text>Note: e.g. []</Text>
-        <TextInput value={note} onChangeText={setNote} />
-        <Button onPress={handleSubmit}>Submit</Button>
-        {loading && <ActivityIndicator />}
-*/

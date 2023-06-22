@@ -1,35 +1,12 @@
 import { View, StyleSheet } from "react-native";
 import { Redirect } from "expo-router";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import { useState, useEffect } from "react";
-import { useAuth } from "../contexts/auth";
+import { useAuth } from "../../contexts/auth";
 
 export default function HomeScreen() {
-    const [table, setTable] = useState([]);
-    const [refreshing, setRefreshing] = useState(false);
-    const { user } = useAuth();
-    
-    useEffect(() => {
-        async function fetchTable() {
-          setRefreshing(true);
-
-          let { data } = await supabase.from('timetables')
-            .select('*')
-            .eq("user_id", "e6cc9320-b2d5-48c1-ae27-06a06f1c085e")
-
-          setRefreshing(false);
-          setTable(data);
-        }
-    
-        fetchTable();
-      }, []);
-    
-    console.log(table);
-
-    const link = table == null ? "/(tabsEmpty)/empty" : "/(tabsExisting)/existing"
-        
     return (
-        <Redirect href={link} />
+        <Redirect href="/(tabs)/empty" />
     );
 }
 /*
