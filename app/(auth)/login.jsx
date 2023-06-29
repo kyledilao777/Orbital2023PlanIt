@@ -1,7 +1,7 @@
 import { Image, View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, useRouter } from "expo-router";
 import { supabase } from "../../lib/supabase";
 
 export default function LoginPage() {
@@ -9,10 +9,10 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
+    const { user } = useRouter();
 
     // asynchronous function; can call "await"
     const handleSubmit = async () => {
-        setErrMsg('');
         if (email == '') {
             setErrMsg("email cannot be empty!")
             return;
@@ -28,7 +28,10 @@ export default function LoginPage() {
             setErrMsg(error.message);
             return;
         }
+
     }
+
+    
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white'}}>
             <View style={styles.imageContainer}>
@@ -65,7 +68,7 @@ export default function LoginPage() {
                 activeUnderlineColor='transparent'
                 caretHidden={false}
                 style={styles.passwordInput} />
-            <Button mode='contained' onPress={handleSubmit} style={styles.signInButton}>Sign In</Button>
+            <Button mode='contained' onPress={() => handleSubmit()} style={styles.signInButton}>Sign In</Button>
             {errMsg !== "" && <Text>{errMsg}</Text>}
             {loading && <ActivityIndicator />}
             <Link href="/register">

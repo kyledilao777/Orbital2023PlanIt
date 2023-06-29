@@ -87,9 +87,15 @@ export default function NewEvent() {
         setLoading(true);
 
         const note = [];
-        const startTime = genTimeBlock(day, parseInt(starttime) + 8);
-        const endTime = genTimeBlock(day, parseInt(endtime) + 8);
-        console.log(user);
+        const startTime = genTimeBlock(day, parseInt(starttime));
+        const endTime = genTimeBlock(day, parseInt(endtime));
+
+        const { data } = await supabase.from('timetables')
+            .select("id")
+            .eq("user_id", user.id)
+
+        const table_id = data[0].id;
+
         // need to use user.id
         const { error } = await supabase.from('events')
             .insert({
@@ -99,7 +105,9 @@ export default function NewEvent() {
                 startTime,
                 endTime,
                 location: location,
-                extra_descriptions: note
+                extra_descriptions: note,
+                email: user.email,
+                timetable_id: table_id
             })
             .select();
             

@@ -8,7 +8,6 @@ export default function App() {
         headerStyle: {
         backgroundColor: "#1D49A7",
         },
-        headerTitle:"Add New Event" ,
        headerTintColor: "#ffe",
         headerTitleStyle: {
         fontWeight: "bold"
@@ -17,6 +16,8 @@ export default function App() {
     >
     
     <Stack.Screen name ="(tabs)" options={{ headerShown: false }} />
+    <Stack.Screen name ="(sync)" options={{ headerTitle: "Synchronisation" }} />
+    <Stack.Screen name ="(newevent)" options={{ headerTitle: "Add New Event" }} />
     </Stack>
   )
 }

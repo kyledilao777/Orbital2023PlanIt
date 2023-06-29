@@ -37,6 +37,7 @@ export default function ExistingScreen() {
   const { user } = useAuth();
   const router = useRouter();
 
+  //loading table
   useEffect(() => {
     async function fetchName() {
       setRefreshing(true);
@@ -54,7 +55,7 @@ export default function ExistingScreen() {
       setRefreshing(true);
       try {
           let { data, error } = await supabase.from('events')
-            .select('*')
+            .select("*")
             .eq("user_id", user.id)
 
           if (error) {
@@ -81,11 +82,21 @@ export default function ExistingScreen() {
       setRefreshing(false);
   };
 
+  //sync timetables
+  const handleSyncPress = () => {
+    router.push("../(sync)/sync");
+  }
+
+  //delete a single event
   const handleEventPress = (evt) => {
+    const startTime = (parseInt(evt.startTime.substring(11,13)) + 8).toString() + evt.startTime.substring(14,16);
+    const endTime = (parseInt(evt.endTime.substring(11,13)) + 8).toString() + evt.endTime.substring(14,16);
+
     const eventDetails = `Event Name: ${evt.event_name}\n` +
-        `Start Time: ${evt.startTime}\n` +
-        `End Time: ${evt.endTime}\n` +
-        `Location: ${evt.location}`;
+        `Start Time: ${startTime.length == 3 ? "0" + startTime : startTime} hrs \n` +
+        `End Time: ${endTime.length == 3 ? "0" + endTime : endTime} hrs \n` +
+        `Location: ${evt.location} \n` + 
+        `Remarks: ${evt.extra_descriptions.length == 0 ? "NIL" : evt.extra_descriptions}`
 
     Alert.alert(
         "Event Details",
@@ -104,6 +115,7 @@ export default function ExistingScreen() {
     );
   };
 
+  
   const deleteEvent = async (event_name, day, startTime, endTime) => {
       try {
           // eq('column name', value to compare against)
@@ -129,6 +141,7 @@ export default function ExistingScreen() {
       }
   };
 
+  //delete a single Timetable
   const handleDeletePress = async () => {
     Alert.alert(
         "Confirm Delete?",
@@ -147,6 +160,7 @@ export default function ExistingScreen() {
     );
   };
 
+  
   const deleteTable = async () => {
     try {
       const { error } = await supabase.from('timetables')
@@ -157,7 +171,7 @@ export default function ExistingScreen() {
           // Handle error
           console.error(error);
         } else {
-            // Event deleted successfully
+            // Table deleted successfully
             Alert.alert('Timetable deleted!');
             router.push("../../(tabsEmpty)/empty");
       }
@@ -167,21 +181,26 @@ export default function ExistingScreen() {
     }
   };
 
-   /*
-  <TouchableOpacity onPress={sync}>
-  <Text style={color='dodgerblue'}>Sync</Text> 
-</TouchableOpacity>*/
-
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={styles.header}>
         {name.map((name) => <Text key="{name}" style={styles.timetablename}>{name.timetable_name}</Text>)}
-          <View style={styles.deleteButtonWrapper}>
+          <View style={styles.syncButtonWrapper}>
+            <Button 
+              mode="contained" 
+              textColor="#6ba1c4"
+              onPress={handleSyncPress}
+              style={styles.headerButtons}
+            > 
+            Sync
+            </Button>
+        </View>
+        <View style={styles.deleteButtonWrapper}>
             <Button 
               mode="contained" 
               textColor="red"
               onPress={handleDeletePress}
-              style={styles.deleteButton}
+              style={styles.headerButtons}
             > 
             Delete
             </Button>
@@ -246,11 +265,15 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       marginVertical: 15,
   },
+  syncButtonWrapper:{
+    marginLeft:200,
+    marginTop:-40,
+  },
   deleteButtonWrapper:{
     marginLeft:300,
     marginTop:-40,
   },
-  deleteButton:{
+  headerButtons:{
     backgroundColor:"transparent"
   },
   buttonWrapper: {

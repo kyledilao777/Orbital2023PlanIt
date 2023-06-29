@@ -24,7 +24,6 @@ export default function ProfileScreen() {
         }
     
         fetchData();
-        console.log(data.map((data) => data.photo_url));
       }, []);
 
     const handleLogOutPress = async () => {
@@ -94,11 +93,10 @@ export default function ProfileScreen() {
           console.error(error);
         }
       };
-      //file:///Users/personal/Library/Developer/CoreSimulator/Devices/FE6318A5-E354-4B48-8E98-AFDC77942FEA/data/Containers/Data/Application/094ECFDA-A107-4122-BC2E-A80AD204B085/Library/Caches/ExponentExperienceData/%2540trasse264%252Forbital-app/ImagePicker/2F170DB1-D78D-42A9-A4B4-F59CACE71ADB.jpg
 
     return (
         <SafeAreaView style={styles.bigcontainer}>
-            <View style={styles.box}/>
+            <View style={styles.box}></View>
             <View style={styles.profile}>
                 {data.map((data) => <Image key="{data}" source={{ uri: data.photo_url }} style={styles.image}></Image>)}
             </View>

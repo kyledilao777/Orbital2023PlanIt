@@ -94,12 +94,11 @@ export default function ProfileScreen() {
         }
       };
 
-
     return (
         <SafeAreaView style={styles.bigcontainer}>
-            <View style={styles.box}/>
+            <View style={styles.box}></View>
             <View style={styles.profile}>
-                <Image source={{ uri: data.photo_url }} style={styles.image} />
+                {data.map((data) => <Image key="{data}" source={{ uri: data.photo_url }} style={styles.image}></Image>)}
             </View>
             <View style={styles.container}>
                 <Image source={require('./images/name.png')} style={{width:30,height:30, resizeMode:"cover"}}/>
@@ -115,9 +114,9 @@ export default function ProfileScreen() {
             <Image source={require('./images/email.png')} style={{width:30,height:30, resizeMode:"cover"}}/>
                 {data.map((data) => <Text key="{data}" style={styles.email}>{data.email}</Text>)}
             </View>
-            <View>
-                <Button style={styles.logOut} labelStyle={{ fontSize:20 }} textColor="#6ba1c4" mode="contained" onPress={handleLogOutPress}> Log Out </Button>
-                <Button style={styles.deleteUser} labelStyle={{ fontSize:20 }} textColor="red" mode="contained" onPress={handleDeletePress}> Delete User </Button>
+            <View style={styles.buttons}>
+                <Button style={styles.buttonWrapper} labelStyle={{ fontSize:20 }} textColor="#6ba1c4" mode="contained" onPress={handleLogOutPress}> Log Out </Button>
+                <Button style={styles.buttonWrapper} labelStyle={{ fontSize:20 }} textColor="red" mode="contained" onPress={handleDeletePress}> Delete User </Button>
             </View>
         </SafeAreaView>
     )
@@ -177,8 +176,11 @@ const styles = StyleSheet.create({
         height: 150,
         backgroundColor: 'lightblue'
     },
-    logOut: {
-        marginLeft:-20,
+    buttonWrapper: {
+        marginLeft:40,
         backgroundColor: "transparent"
+    },
+    buttons:{
+        marginTop:20,
     }
 });

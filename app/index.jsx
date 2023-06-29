@@ -8,30 +8,52 @@ export default function HomeScreen() {
     const [table, setTable] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const { user } = useAuth();
+    const [ errMsg, setErrMsg ] = useState('');
     
     useEffect(() => {
-        async function fetchTable() {
+        async function handleLoad() {
           setRefreshing(true);
 
-          let { data } = await supabase.from('timetables')
-            .select('*')
-            .eq("user_id", "e6cc9320-b2d5-48c1-ae27-06a06f1c085e")
+            let { data } = await supabase.from('timetables')
+                .select('*')
+                .eq("user_id", user.id)
+        /*
+            let { data2, error } = await supabase
+                .from("profiles")
+                .select("user_id")
+                .eq("email", user.email);
+            
+            if (error) {
+                setRefreshing(false);
+                setErrMsg(error.message);
+                return;
+            }
 
-          setRefreshing(false);
-          setTable(data);
+            if (data2 == null) {
+                const { error2 } = await supabase
+                    .from("profiles")
+                    .update({ user_id: user.id })
+                    .eq("email", user.email);
+
+                if (error2) {
+                    setRefreshing(false);
+                    setErrMsg(error2.message);
+                    return;
+                }
+            }
+*/
+            setRefreshing(false);
+            setTable(data);
         }
-    
-        fetchTable();
-      }, []);
-    
-    console.log(table);
-
-    const link = table == null ? "/(tabsEmpty)/empty" : "/(tabsExisting)/existing"
         
-    return (
-        <Redirect href={link} />
-    );
-}
+        handleLoad(); 
+      }, []);
+
+      console.log(table);
+      const link = table.length == 0 ? "/(tabsEmpty)/(tabs)/empty" : "/(tabsExisting)/(tabs)/existing"
+    return <Redirect href = {link}/>;
+};
+
 /*
     const [count, setCount] = useState(0);
     return (
