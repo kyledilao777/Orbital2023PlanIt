@@ -1,10 +1,7 @@
-import { Text, Button } from "react-native-paper"
-import { supabase } from "../../../lib/supabase";
-import { React, useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, View, Image, Alert } from 'react-native';
-import { useAuth } from "../../../contexts/auth";
-import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from "expo-router";
+import { supabase } from "../lib/supabase";
+import { React, Component, useState, useEffect } from 'react';
+import { useAuth } from "../contexts/auth";
+import { Redirect } from "expo-router";
 
 export default function HomeScreen() {
     const [table, setTable] = useState([]);
@@ -24,11 +21,11 @@ export default function HomeScreen() {
             setRefreshing(false);
             setTable(data);
         }
-        console.log(table);
+
         handleLoad(); 
       }, []);
 
     return (
-        {table.map((table) => !table.length ? <Redirect href = "/(tabsEmpty)" /> : <Redirect href = "/(tabsExisting)"/>)}
+        table.length == 0 ? <Redirect href = "/(tabsEmpty)" /> : <Redirect href = "/(tabsExisting)"/>
     )
 };
