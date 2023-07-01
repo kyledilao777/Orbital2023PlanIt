@@ -1,7 +1,7 @@
 import { Image, View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
-import { Link, Stack, useRouter } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { supabase } from "../../lib/supabase";
 
 export default function LoginPage() {
@@ -9,7 +9,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
-    const { user } = useRouter();
 
     // asynchronous function; can call "await"
     const handleSubmit = async () => {

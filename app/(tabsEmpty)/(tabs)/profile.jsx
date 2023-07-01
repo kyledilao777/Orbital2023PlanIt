@@ -3,7 +3,6 @@ import { supabase } from "../../../lib/supabase";
 import { React, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Image, Alert } from 'react-native';
 import { useAuth } from "../../../contexts/auth";
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
