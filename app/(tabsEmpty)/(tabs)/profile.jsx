@@ -3,6 +3,7 @@ import { supabase } from "../../../lib/supabase";
 import { React, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Image, Alert } from 'react-native';
 import { useAuth } from "../../../contexts/auth";
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
@@ -51,7 +52,7 @@ export default function ProfileScreen() {
               console.error(error);
             } else {
                 // Logged out successfully
-                router.push("../../(auth)/login");
+                router.push("../(auth)/login");
             }
         } catch (error) {
           // Handle error
@@ -79,13 +80,13 @@ export default function ProfileScreen() {
     
     const deleteUser = async () => {
         try {
-          const { error } = await supabase.auth.admin.deleteUser(user.id)
+          const { error } = await supabase.rpc('delete_user');
             if (error) {
               // Handle error
               console.error(error);
             } else {
                 // Event deleted successfully
-                router.push("../../(auth)/login");
+                logOut();
           }
         } catch (error) {
           // Handle error

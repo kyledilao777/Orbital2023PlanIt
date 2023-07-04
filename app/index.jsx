@@ -1,31 +1,30 @@
 import { supabase } from "../lib/supabase";
-import { React, Component, useState, useEffect } from 'react';
+import { React, Component, useState, useEffect, useRef } from 'react';
 import { useAuth } from "../contexts/auth";
 import { Redirect } from "expo-router";
+import { Link } from "expo-router";
 
 export default function HomeScreen() {
-    const [table, setTable] = useState([]);
+    const [table, setTable]= useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [ errMsg, setErrMsg ] = useState('');
-    const user  = useAuth();
+    const { user }  = useAuth();
     
     useEffect(() => {
-        async function handleLoad() {
-            setRefreshing(true);
-
-            let { data } = await supabase
-                .from('timetables')
-                .select('*')
-                .eq("user_id", user.id)
-
-            setRefreshing(false);
+        const handleLoad = async () => {
+            const { data } = await supabase.from('timetables').select('*').eq("user_id", user.id).single();
             setTable(data);
+            console.log('from useEffect: ', data);
         }
 
         handleLoad(); 
-      }, []);
+      }, [table]);
 
-    return (
-        table.length == 0 ? <Redirect href = "/(tabsEmpty)" /> : <Redirect href = "/(tabsExisting)"/>
-    )
+    console.log("table: ", table);
+    
+    if (table == null) {
+        return <Redirect href = "/(tabsEmpty)/empty"/>;
+    } else {
+        return <Redirect href = "/(tabsExisting)/existing"/>;
+    }
 };

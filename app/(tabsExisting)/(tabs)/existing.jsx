@@ -16,16 +16,6 @@ import { useRouter } from "expo-router";
 import { Button } from "react-native-paper";
 import { useAuth } from "../../../contexts/auth";
 
-const events_data = [
-  {
-    title: "Math",
-    startTime: genTimeBlock("MON", 9),
-    endTime: genTimeBlock("MON", 10, 50),
-    location: "Classroom 403",
-    extra_descriptions: ["Kim", "Lee"],
-  }
-];
-
 export default function ExistingScreen() {
   const numOfDays = 5;
   const pivotDate = genTimeBlock('mon');
