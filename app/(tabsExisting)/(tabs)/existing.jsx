@@ -39,10 +39,11 @@ export default function ExistingScreen() {
     }
     
     fetchName(); fetchEvents();
-  }, []);
+  }, [events]);
 
   const fetchEvents = async () => {
       setRefreshing(true);
+
       try {
           let { data, error } = await supabase.from('events')
             .select("*")
@@ -52,24 +53,45 @@ export default function ExistingScreen() {
               console.error(error);
               return;
           }
-/*
-          console.log(data);
-          setObj(data[0])
 
-          console.log(parseInt(obj.startTime));
-          setEvents(Object.entries({
-              startTime: genTimeBlock(obj.day, parseInt(obj.startTime) + 8),
-              endTime: genTimeBlock(obj.day, parseInt(obj.endTime) + 8),
+          let eventslist = [];
+
+          for (var j = 0; j < data.length; j++) {
+            var obj = data[j]; 
+            
+            obj = {
+                event_name: obj.event_name,
+                user_id: user.id,
+                day: obj.day,
+                startTime: obj.startTime,
+                endTime: obj.endTime,
+                location: obj.location,
+                extra_descriptions: obj.extra_descriptions,
+                email: user.email,
+                timetable_id: obj.table_id
+            }
+
+            var evt = { 
+              day: obj.day,
+              fullStart: obj.startTime,
+              fullEnd: obj.endTime,
               title: obj.event_name,
+              startTime: genTimeBlock(obj.day, parseInt(obj.startTime.substring(11,13)) + 8),
+              endTime: genTimeBlock(obj.day, parseInt(obj.endTime.substring(11,13)) + 8),
               location: obj.location,
               extra_descriptions: obj.extra_descriptions,
-          }));*/
-          
-          setEvents(data);
+            };
+
+            eventslist.push(evt);
+          }
+
+          setEvents(eventslist);
+
       } catch (error) {
           console.error(error);
       }
-      setRefreshing(false);
+      setRefreshing(false);   
+
   };
 
   //sync timetables
@@ -79,10 +101,10 @@ export default function ExistingScreen() {
 
   //delete a single event
   const handleEventPress = (evt) => {
-    const startTime = (parseInt(evt.startTime.substring(11,13)) + 8).toString() + evt.startTime.substring(14,16);
-    const endTime = (parseInt(evt.endTime.substring(11,13)) + 8).toString() + evt.endTime.substring(14,16);
+    const startTime = evt.startTime.toString().substring(16,18) + evt.startTime.toString().substring(19,21); 
+    const endTime = evt.endTime.toString().substring(16,18) + evt.endTime.toString().substring(19,21);
 
-    const eventDetails = `Event Name: ${evt.event_name}\n` +
+    const eventDetails = `Event Name: ${evt.title}\n` +
         `Start Time: ${startTime.length == 3 ? "0" + startTime : startTime} hrs \n` +
         `End Time: ${endTime.length == 3 ? "0" + endTime : endTime} hrs \n` +
         `Location: ${evt.location} \n` + 
@@ -94,7 +116,7 @@ export default function ExistingScreen() {
         [
             {
                 text: "Delete Event",
-                onPress: () => deleteEvent(evt.event_name, evt.day, evt.startTime, evt.endTime),
+                onPress: () => deleteEvent(evt.day, evt.fullStart, evt.fullEnd),
                 style: "destructive",
             },
             {
@@ -106,12 +128,11 @@ export default function ExistingScreen() {
   };
 
   
-  const deleteEvent = async (event_name, day, startTime, endTime) => {
+  const deleteEvent = async (day, startTime, endTime) => {
       try {
           // eq('column name', value to compare against)
           const { error } = await supabase.from('events')
               .delete()
-              .eq('event_name', event_name)
               .eq('day', day)
               .eq('startTime', startTime)
               .eq('endTime', endTime);
@@ -208,15 +229,6 @@ export default function ExistingScreen() {
             formatDateHeader="dddd"
           />
       </View>
-      <View style={styles.button}>
-        <View style={styles.buttonWrapper}>
-            <Button
-              onPress={() => fetchEvents()}
-              textColor='black'
-              mode='outlined'
-              style={styles.refresh}
-            >Refresh</Button>
-        </View>
         <View style={styles.buttonWrapper}>
           <Link href="/addevent">
             <Button
@@ -224,7 +236,6 @@ export default function ExistingScreen() {
               mode='outlined'
             >Add an event</Button>
           </Link>
-        </View>
       </View>
     </SafeAreaView>
   );
@@ -267,7 +278,8 @@ const styles = StyleSheet.create({
     backgroundColor:"transparent"
   },
   buttonWrapper: {
-      marginHorizontal: 8,
+    paddingVertical: 15,
+    marginHorizontal: 15,
   }
 })
 

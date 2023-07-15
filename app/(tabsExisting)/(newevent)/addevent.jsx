@@ -7,6 +7,7 @@ import { useAuth } from "../../../contexts/auth";
 import { useRouter } from "expo-router";
 import { genTimeBlock } from 'react-native-timetable';
 import { Dropdown } from 'react-native-element-dropdown';
+import OneSignal from 'react-onesignal'
 
 export default function NewEvent() {
     const [title, setTitle] = useState('');
@@ -86,7 +87,6 @@ export default function NewEvent() {
         }
         setLoading(true);
 
-        const note = [];
         const startTime = genTimeBlock(day, parseInt(starttime));
         const endTime = genTimeBlock(day, parseInt(endtime));
 
@@ -105,7 +105,7 @@ export default function NewEvent() {
                 startTime,
                 endTime,
                 location: location,
-                extra_descriptions: note,
+                extra_descriptions: [ note ],
                 email: user.email,
                 timetable_id: table_id
             })
@@ -120,10 +120,6 @@ export default function NewEvent() {
         setLoading(false);
         router.push('../existing'); // auto push back to the root page
     }
-/*
-    const handleGoBack = () => {
-        router.push('../existing');
-    };*/
 
     return <View style={styles.container}>
         <Text style={styles.header}> Please fill in the details of your new event. </Text>
@@ -131,6 +127,7 @@ export default function NewEvent() {
             autoCapitalize='none'
             placeholder="Event Name"
             placeholderTextColor='#9E9E9E'
+            textColor='black'
             value={title} 
             onChangeText={setTitle} 
             style={styles.inputSearchStyle}
@@ -202,6 +199,7 @@ export default function NewEvent() {
             autoCapitalize='none'
             placeholder="Location"
             placeholderTextColor='#9E9E9E'
+            textColor='black'
             value={location} 
             onChangeText={setLocation} 
             style={styles.inputSearchStyle}
@@ -210,6 +208,7 @@ export default function NewEvent() {
             autoCapitalize='none'
             placeholder="Note (e.g. Remind Zac)"
             placeholderTextColor='#9E9E9E'
+            textColor='black'
             value={note} 
             onChangeText={setNote}
             style={styles.inputSearchStyle}
@@ -248,6 +247,7 @@ const styles = StyleSheet.create({
         marginBottom: -2,
         marginLeft:0,
         fontSize: 20,
+        
     },
     dropdown: {
         margin: 0,
@@ -260,11 +260,12 @@ const styles = StyleSheet.create({
     placeholderStyle: {
         fontSize: 20,
         color:'#9E9E9E',
-        marginLeft:15
+        marginLeft:13
 
     },
     selectedTextStyle: {
         fontSize: 20,
+        marginLeft:16,
     },
     iconStyle: {
         width: 20,

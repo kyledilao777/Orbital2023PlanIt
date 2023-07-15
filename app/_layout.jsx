@@ -26,6 +26,7 @@ export default function Root() {
             <Stack.Screen name ="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name ="(tabsEmpty)" options={{ headerShown: false }} />
             <Stack.Screen name ="(tabsExisting)" options={{ headerShown: false }} />
+            <Stack.Screen name ="index" options={{ headerShown: false }} />
             </Stack>
             
         </AuthProvider>

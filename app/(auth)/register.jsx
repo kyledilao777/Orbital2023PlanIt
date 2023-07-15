@@ -48,7 +48,6 @@ export default function Register() {
             "Please verify your email.",
             ""
         )
-        router.push("/");
     }
 
     const addProfile = async () => {
@@ -97,9 +96,8 @@ export default function Register() {
     
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
-        } else {
-            alert('You did not select any image.');
         }
+
     };
 
     const imageSource = selectedImage !== null

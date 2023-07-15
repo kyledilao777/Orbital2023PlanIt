@@ -27,7 +27,6 @@ export default function LoginPage() {
             setErrMsg(error.message);
             return;
         }
-
     }
 
     
