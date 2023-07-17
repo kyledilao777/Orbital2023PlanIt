@@ -116,7 +116,7 @@ export default function ExistingScreen() {
         [
             {
                 text: "Delete Event",
-                onPress: () => deleteEvent(evt.day, evt.fullStart, evt.fullEnd),
+                onPress: () => deleteEvent(evt.title, evt.day, evt.fullStart, evt.fullEnd),
                 style: "destructive",
             },
             {
@@ -128,11 +128,12 @@ export default function ExistingScreen() {
   };
 
   
-  const deleteEvent = async (day, startTime, endTime) => {
+  const deleteEvent = async (name, day, startTime, endTime) => {
       try {
           // eq('column name', value to compare against)
           const { error } = await supabase.from('events')
               .delete()
+              .eq('event_name', name)
               .eq('day', day)
               .eq('startTime', startTime)
               .eq('endTime', endTime);

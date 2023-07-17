@@ -1,9 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
-import { supabase } from "../../../lib/supabase";
-import { useAuth } from "../../../contexts/auth";
+import { Text, TextInput, Button } from "react-native-paper";
 import { useRouter } from "expo-router";
 
 export default function Sync() {

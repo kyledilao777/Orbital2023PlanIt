@@ -87,8 +87,8 @@ export default function NewEvent() {
         }
         setLoading(true);
 
-        const startTime = genTimeBlock(day, parseInt(starttime));
-        const endTime = genTimeBlock(day, parseInt(endtime));
+        const startTime = genTimeBlock(day, parseInt(starttime) - 1);
+        const endTime = genTimeBlock(day, parseInt(endtime) - 1);
 
         const { data } = await supabase.from('timetables')
             .select("id")

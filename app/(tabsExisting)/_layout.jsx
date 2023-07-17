@@ -19,6 +19,7 @@ export default function App() {
     <Stack.Screen name ="(tabs)" options={{ headerShown: false }} />
     <Stack.Screen name ="(sync)" options={{ headerTitle: "Synchronisation" }} />
     <Stack.Screen name ="(newevent)" options={{ headerTitle: "Add New Event" }} />
+    <Stack.Screen name ="(commonslot)" options={{ headerTitle: "Add a Common Slot" }} />
     </Stack>
   )
 }
