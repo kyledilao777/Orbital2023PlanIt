@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { useRouter } from "expo-router";
+import { useAuth } from "../../contexts/auth";
 import { View, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import { Text, TextInput, ActivityIndicator, Button } from 'react-native-paper';
 import * as ImagePicker from "expo-image-picker"
@@ -23,6 +24,7 @@ export default function Register() {
     const [errMsg, setErrMsg] = useState('');
     const [selectedImage, setSelectedImage] = useState(null);
     const router  = useRouter();
+    const { user } = useAuth();
 
     const handleSubmit = async () => {
         if (email == '') {
@@ -66,6 +68,7 @@ export default function Register() {
             setErrMsg('Occupation cannot be empty')
             return;
         }
+
 
         const { error } = await supabase.from('profiles').insert({
             first_name: fname,
@@ -156,7 +159,7 @@ export default function Register() {
                 textColor='black'
                 mode='contained'
                 style={styles.createAcc} 
-                onPress={() => { addProfile(); handleSubmit();} }>Create Account</Button>
+                onPress={() => { addProfile(); handleSubmit();  } }>Create Account</Button>
             {errMsg !== "" && <Text>{errMsg}</Text>}
             {loading && <ActivityIndicator />}
         </View>

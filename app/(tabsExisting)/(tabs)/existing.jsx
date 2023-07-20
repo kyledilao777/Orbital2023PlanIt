@@ -7,6 +7,7 @@ import {
   Alert,
   Text,
   FlatList,
+  TouchableHighlight
 } from 'react-native';
 import TimeTableView, { genTimeBlock } from 'react-native-timetable';
 import { Header } from 'react-native/Libraries/NewAppScreen';
@@ -194,35 +195,45 @@ export default function ExistingScreen() {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor:"white"}}>
       <View style={styles.header}>
-        {name.map((name) => <Text key="{name}" style={styles.timetablename}>{name.timetable_name}</Text>)}
-          <View style={styles.syncButtonWrapper}>
-            <Button 
-              mode="contained" 
-              textColor="#6ba1c4"
-              onPress={handleSyncPress}
-              style={styles.headerButtons}
-            > 
-            Sync
-            </Button>
+        <View style={styles.ttnameview}>
+           {name.map((name) => <Text key="{name}" style={styles.timetablename}>{name.timetable_name}</Text>)}
+        </View>
+        <View style={styles.addButtonWrapper}>
+          <Button
+            textColor="#6ba1c4"
+            compact="true"
+            onPress={() => {router.push("/addevent")}}
+            style={styles.add}
+            >Add Event</Button>
+        </View>
+        <View style={styles.syncButtonWrapper}>
+          <Button 
+            textColor="#6ba1c4"
+            compact="true"
+            onPress={handleSyncPress}
+            style={styles.sync}
+          > 
+          Sync
+          </Button>
         </View>
         <View style={styles.deleteButtonWrapper}>
-            <Button 
-              mode="contained" 
-              textColor="red"
-              onPress={handleDeletePress}
-              style={styles.headerButtons}
-            > 
-            Delete
-            </Button>
+          <Button 
+            textColor="red"
+            compact="true"
+            onPress={handleDeletePress}
+            style={styles.delete}
+          > 
+          Delete
+          </Button>
         </View>
       </View>
       <View style={styles.container}>
           <TimeTableView
             events={events}
             pivotTime={8}
-            pivotEndTime={23}
+            pivotEndTime={22}
             pivotDate={genTimeBlock('mon')}
             nDays={5}
             onEventPress={handleEventPress}
@@ -230,57 +241,63 @@ export default function ExistingScreen() {
             formatDateHeader="dddd"
           />
       </View>
-        <View style={styles.buttonWrapper}>
-          <Link href="/addevent">
-            <Button
-              textColor='black'
-              mode='outlined'
-            >Add an event</Button>
-          </Link>
-      </View>
     </SafeAreaView>
   );
 }
 
-
 const styles = StyleSheet.create({
+  ttnameview:{
+    marginLeft:28,
+  },
   timetablename:{
     fontSize: 20,
-    marginLeft:5,
-    marginTop:10,
-    marginBottom:10,
     width: "100%",
+    textAlign:'left',
     fontFamily: 'Arial'
   },
   header:{
     width:"100%",
+    marginTop:20,
   },
   headerStyle: {
-      backgroundColor: "black"
+      backgroundColor: "black",
   },
   container: {
       flex: 1,
+      marginTop:5,
       backgroundColor: 'white',
   },
   button: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginVertical: 15,
-  },
-  syncButtonWrapper:{
-    marginLeft:200,
-    marginTop:-40,
-  },
-  deleteButtonWrapper:{
-    marginLeft:300,
-    marginTop:-40,
-  },
-  headerButtons:{
-    backgroundColor:"transparent"
+      marginHorizontal: 5,
   },
   buttonWrapper: {
-    paddingVertical: 15,
-    marginHorizontal: 15,
+    flex:1,
+    flexDirection:'row',
+    alignItems:'center',
+    marginVertical:-240,
+  },
+  addButtonWrapper:{
+    marginLeft:181,
+    marginTop:-30,
+  },
+  syncButtonWrapper:{
+    marginLeft:266,
+    marginTop:-38,
+  },
+  deleteButtonWrapper:{
+    marginLeft:313,
+    marginTop:-38,
+  },
+  delete:{
+    backgroundColor:"transparent",
+    width:70,
+  },
+  sync:{
+    backgroundColor:"transparent",
+    width:60,
+  },
+  add:{
+    backgroundColor:"transparent",
+    width:100,
   }
-})
-
+});

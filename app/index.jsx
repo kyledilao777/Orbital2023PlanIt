@@ -31,10 +31,10 @@ export default function HomeScreen() {
 
       return (
         <SafeAreaView>
-        <View style = {styles.text}>
-            <Text style={{paddingBottom: 10}}> Please wait. Screen loading... </Text>
-            <ActivityIndicator color="#1D49A7"/>
-        </View>
+            <View style = {styles.text}>
+                <Text style={{paddingBottom: 10}}> Please wait. Screen loading... </Text>
+                <ActivityIndicator color="#1D49A7"/>
+            </View>
         </SafeAreaView>
       )
 };

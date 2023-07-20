@@ -6,13 +6,20 @@ export default function App() {
     <Stack
       screenOptions={{
         headerStyle: {
-        backgroundColor: "#1D49A7",
+          backgroundColor: "white",
+          
         },
-        headerTitle:"Add New Timetable" ,
-       headerTintColor: "#ffe",
+        headerTitle: "Add New Timetable",
         headerTitleStyle: {
-        fontWeight: "bold"
+          fontWeight: "bold",
+          color: "black",
+          fontSize:40,
+          height:50,
+          marginTop:35,
+          marginLeft:10,
         },
+        headerShadowVisible: false,
+        headerTitleAlign:'left'
       }}
     >
     

@@ -11,13 +11,20 @@ export default () => {
   return (
       <Stack
         screenOptions={{
-            headerStyle: {
-            backgroundColor: "#1D49A7",
-            },
-            headerTintColor: "#ffe",
-            headerTitleStyle: {
-            fontWeight: "bold"
-            },
+          headerStyle: {
+            backgroundColor: "white",
+            
+          },
+          headerTitleStyle: {
+            fontWeight: "bold",
+            color: "black",
+            fontSize:40,
+            height:50,
+            marginTop:35,
+            marginLeft:10,
+          },
+          headerShadowVisible: false,
+          headerTitleAlign:'left'
         }}>
         <Stack.Screen name ="addTimetable" options={{ headerShown: false }} />
       </Stack>

@@ -10,11 +10,11 @@ export default function AuthRoot() {
         <Stack
             screenOptions={{
                 headerStyle: {
-                backgroundColor: "#1D49A7",
+                backgroundColor: "white",
                 },
-                headerTintColor: "#ffe",
                 headerTitleStyle: {
-                fontWeight: "bold"
+                    fontWeight: "bold",
+                    color:"black"
                 },
             }}
         >

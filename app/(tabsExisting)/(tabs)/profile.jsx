@@ -96,7 +96,7 @@ export default function ProfileScreen() {
 
     return (
         <SafeAreaView style={styles.bigcontainer}>
-            <View style={styles.box}></View>
+            <View style={styles.secondcontainer}>
             <View style={styles.profile}>
                 {data.map((data) => <Image key="{data}" source={{ uri: data.photo_url }} style={styles.image}></Image>)}
             </View>
@@ -117,6 +117,7 @@ export default function ProfileScreen() {
             <View style={styles.buttons}>
                 <Button style={styles.buttonWrapper} labelStyle={{ fontSize:20 }} textColor="#6ba1c4" mode="contained" onPress={handleLogOutPress}> Log Out </Button>
                 <Button style={styles.buttonWrapper} labelStyle={{ fontSize:20 }} textColor="red" mode="contained" onPress={handleDeletePress}> Delete User </Button>
+            </View>
             </View>
         </SafeAreaView>
     )
@@ -143,6 +144,7 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     image:{
+        alignSelf:"center",
         height:125,
         width:125,
         borderRadius: 100,
@@ -165,10 +167,12 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         width:"75%"
     },
+    secondcontainer:{
+        marginTop:100,
+    },
     bigcontainer: {
         flex:1,
-        marginTop:150,
-        marginLeft:-30
+        backgroundColor:"white",
     },
     box: {
         marginTop:-150,
@@ -177,7 +181,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightblue'
     },
     buttonWrapper: {
-        marginLeft:40,
+        alignItems:"center",
         backgroundColor: "transparent"
     },
     buttons:{

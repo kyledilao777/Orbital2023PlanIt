@@ -5,16 +5,19 @@ export default function App() {
         <Stack
             screenOptions={{
                 headerStyle: {
-                backgroundColor: "#1D49A7",
-                },
-                headerTintColor: "#ffe",
-                headerTitleStyle: {
-                fontWeight: "bold"
-                },
+            backgroundColor: "white",
+            },
+            headerTitleStyle: {
+              fontWeight: "bold",
+              color:"black"
+            },
+          
             }}
         >
-        <Stack.Screen name ="sync" options={{ headerShown:false }} />
-        <Stack.Screen name ="syncList" options={{ headerShown:false }} />
+        <Stack.Screen name ="sync" options={{ headerShown: false }} />
+        <Stack.Screen name ="syncRequest" options = {{ headerShown: false }} />
+        <Stack.Screen name ="syncList" options = {{ headerShown: false }} />
+        <Stack.Screen name ="syncHold" options = {{ headerShown: false }} />
         </Stack>
     );
 }

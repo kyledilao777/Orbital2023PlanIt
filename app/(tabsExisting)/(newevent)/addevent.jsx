@@ -7,7 +7,7 @@ import { useAuth } from "../../../contexts/auth";
 import { useRouter } from "expo-router";
 import { genTimeBlock } from 'react-native-timetable';
 import { Dropdown } from 'react-native-element-dropdown';
-import OneSignal from 'react-onesignal'
+import OneSignal from 'react-onesignal';
 
 export default function NewEvent() {
     const [title, setTitle] = useState('');
@@ -87,8 +87,8 @@ export default function NewEvent() {
         }
         setLoading(true);
 
-        const startTime = genTimeBlock(day, parseInt(starttime) - 1);
-        const endTime = genTimeBlock(day, parseInt(endtime) - 1);
+        const startTime = genTimeBlock(day, parseInt(starttime));
+        const endTime = genTimeBlock(day, parseInt(endtime));
 
         const { data } = await supabase.from('timetables')
             .select("id")

@@ -1,38 +1,86 @@
-/* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import * as Notifications from 'expo-notifications';
+import { SafeAreaView, View, StyleSheet } from "react-native";
 import { Text, TextInput, Button } from "react-native-paper";
+import { supabase } from "../../../lib/supabase";
 import { useRouter } from "expo-router";
+import { useAuth } from "../../../contexts/auth";
 
 export default function Sync() {
     const router = useRouter();
+    const { user } = useAuth();
+    const [tblName, setTblName] = useState([]);
     const [userEmail, setUserEmail] = useState('');
- 
-    const handleSyncPress = () => {
-        router.push({ pathname: "/syncList", params: { email: userEmail }});
-    }; 
+    const [loading, setLoading] = useState(false);
+    const [errMsg, setErrMsg] = useState('');
+  
+
+    async function schedulePushNotification() {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Sync Request",
+            body: 'You have successfully made a sync request. Great work! 🎉 ',
+        },
+          trigger: { seconds: 4 },
+        });
+    }
+
+    const handleSyncPress = async () => {
+        let { data } = await supabase  
+            .from('timetables')
+            .select('timetable_name')
+            .eq("user_id", user.id);
+
+        
+        setTblName(data[0].timetable_name)
+
+        const { error } = await supabase
+            .from("syncRequests")
+            .insert({
+                user_id: user.id,
+                sender: user.email,
+                timetable_name: tblName,
+                receipient: userEmail,
+                status:"Pending",
+            })
+        .select();
+
+        if (error != null) {
+            console.log(error);
+            setErrMsg(error.message); // can only be string, so need .message
+            return;
+        }
+        
+        schedulePushNotification();
+        router.push({ pathname: "/syncRequest", params: { email: userEmail }});
+        
+    };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.header}>Who do you want to sync with?</Text>
-                <TextInput
-                    style={styles.emailInput}
-                    value={userEmail}
-                    onChangeText={setUserEmail}
-                    placeholder="User's email"
-                    placeholderTextColor='#9E9E9E'
-                    autoCapitalize="none" />
+        <SafeAreaView style={{flex:1, backgroundColor:"white"}}>
+            <View style={styles.container}>
+                <View>
+                    <Text style={styles.text}>Who do you want to sync with?</Text>
+                </View>
+                <View style={styles.input}>
+                    <TextInput
+                        style={styles.emailInput}
+                        value={userEmail}
+                        onChangeText={setUserEmail}
+                        placeholder="User's email"
+                        placeholderTextColor='#9E9E9E'
+                        autoCapitalize="none" />
+                </View>
+                <View style={styles.syncButton}>
+                    <Button
+                        onPress={handleSyncPress}
+                        mode='contained'
+                        textColor='black'
+                        style={{ backgroundColor: '#FADF70', paddingHorizontal: 25 }}
+                    >Sync</Button>
+                </View>
             </View>
-            <View style={styles.syncButton}>
-                <Button
-                    onPress={handleSyncPress}
-                    mode='contained'
-                    textColor='black'
-                    style={{ backgroundColor: '#FADF70', paddingHorizontal: 25 }}
-                >Sync</Button>
-            </View>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -41,11 +89,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
     },
-    header: {
-        marginLeft: 15,
-        paddingRight:20,
+    text: {
+        marginLeft: 25,
         textAlign: 'left',
-        fontSize: 25,
+        fontSize: 23,
         fontWeight: 'bold',
         marginBottom: 50
     },
@@ -57,17 +104,15 @@ const styles = StyleSheet.create({
         paddingLeft: 35
     },
     emailInput: {
-        padding:0,
-        width: '90%',
+        width: '80%',
         height: 45,
         marginTop: -50,
-        marginBottom: 35,
-        marginLeft:17,
+        marginBottom:10,
+        marginLeft:25,
         backgroundColor: 'transparent',
         fontSize: 20,
     },
     syncButton: {
         alignItems: 'center',
-        justifyContent: 'center',
     }
 })

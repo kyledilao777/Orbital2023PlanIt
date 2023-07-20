@@ -15,7 +15,6 @@ export default function NewCommonSlot() {
     const [events, setEvents] = useState([]);
     const [otherEvents, setOtherEvents] = useState([]);
     const [freeSlots, setFreeSlots] = useState([]);
-    const [selected, setSelected] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const { user } = useAuth();
     const [isFocus, setIsFocus] = useState(false);
@@ -160,10 +159,9 @@ export default function NewCommonSlot() {
     }, [email, events, otherEvents]);
 
     const handleAddEvent = async () => {
-        const startTime = genTimeBlock(day, selected.startTime - 1);
-        const endTime = genTimeBlock(day, selected.endTime - 1);
 
-        console.log(selected.startTime)
+        const startTime = genTimeBlock(day, slot.startTime);
+        const endTime = genTimeBlock(day, slot.endTime);
 
         const { data } = await supabase.from('timetables')
             .select("id")
@@ -219,14 +217,12 @@ export default function NewCommonSlot() {
         .filter((free) => free.day === day) // Filter the slots based on selected day
         .map((free) => ({
             label: `${free.day}, ${free.startTime} to ${free.endTime}`,
-            value: `${free.day}, ${free.startTime} to ${free.endTime}`,
-            stored: free
+            value: free,
         }));
-    
-    console.log(selected)
+
     return (
         <SafeAreaView>
-            <View style = {styles.body}>
+            <View>
                 <Text style={styles.header}> Choose your desired day:   </Text>
                 <Dropdown
                     style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
@@ -249,7 +245,7 @@ export default function NewCommonSlot() {
                     }}
                 />
             </View>
-            <View style={styles.body}>
+            <View>
                 <Text style={styles.header}> Select a time for your new event:   </Text>
                 <Dropdown
                     style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
@@ -266,9 +262,8 @@ export default function NewCommonSlot() {
                     value={slot}
                     onFocus={() => setIsFocus(true)}
                     onBlur={() => setIsFocus(false)}
-                    onChange={item => {
+                    onChange={(item) => {
                         setSlot(item.value);
-                        setSelected(item.stored);
                         setIsFocus(false);
                     }}
                 />
@@ -295,8 +290,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     body: {
-        marginLeft: 5,
-        marginRight: 5
+        paddingLeft: 10,
     },
     inputSearchStyle: {
         width: '100%',
@@ -309,8 +303,8 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         margin: 0,
-        marginLeft: 5,
-        marginRight: 5,
+        marginLeft: 0,
+        marginRight: 0,
         height: 50,
         borderBottomColor: 'gray',
         borderBottomWidth: 0.5,
@@ -323,10 +317,8 @@ const styles = StyleSheet.create({
     },
     selectedTextStyle: {
         fontSize: 20,
-        marginLeft:15,
     },
     button: {
-        marginTop: 20,
         alignItems: 'center',
         justifyContent: 'center',
     }

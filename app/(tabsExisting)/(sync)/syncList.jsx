@@ -150,12 +150,6 @@ export default function SyncList() {
         fetchFreeSlots();
     }, [email, events, otherEvents]);
 
-    /*
-    const router = useRouter();
-    const handleSyncPress = () => {
-        router.push('../(sync)/addCommonSlot');
-    }; */
-
     return (
         <SafeAreaView style={styles.container}>
             <Image source={require('./images/smile.png')} style={styles.image}/>
@@ -197,12 +191,12 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        justifyContent: 'center', // Add this line
-        alignItems: 'center', // Add this line
+        justifyContent: 'center', 
+        alignItems: 'center',
     },
     list: {
         marginBottom: 20,
-        alignSelf: 'center', // Add this line
+        alignSelf: 'center',
     },
     header: {
         width: "100%",
@@ -232,150 +226,3 @@ const styles = StyleSheet.create({
         fontSize: 15,
     },
 });
-
-/* 
-tracynguyen264@gmail.com
-kyledaniel.lao@gmail.com
-
-me: MON 8-9, 13-15 free: 9-12, 15-22
-kyle: MON 9-11, MON 12-2 free: 8-9, 11-12, 2-22
-common: MON 11-12, 15-22
-
-const splitSlots = [];
-for slot in freeSlots
-    let num = endTime - startTime;
-    const slotStartTime = slot.startTime
-
-    for j in range(1, num+1)
-        splitSlots.push({
-            day: day,
-            startTime: startTime,
-            endTime: startTime + 1,
-        });
-
-        slotStartTime += 1
-
-
-For Milestone 3:
-    async function checkAvailability() {
-            setArr(events["MON"]); 
-            console.log(arr);
-        };
-        
-        checkAvailability();
-        
-    *******************************************
-
-    <View>
-        {arr.forEach((ele) => <Text key ="{ele}"> {ele} </Text>)}
-    </View>
-    
-    *******************************************
-
-    const availability = useState([
-        { key: 'MON', value: [startTime_data]},
-        { key: 'TUE', value: [startTime_data]},
-        { key:  'WED', value: [startTime_data]},
-        { key: 'THU', value: [startTime_data]},
-        { key: 'FRI', value: [startTime_data]},
-    ]);
-*/
-
-/*
-past:
-<View >
-    {otherName.map((otherName) => <Text key="{otherName}" style={styles.header} > {otherName.first_name} will be busy on: </Text>)}
-    {otherEvents.map((otherEvent) => <Text key="{otherEvent}" style={styles.body} > {otherEvent.day}, {parseInt(otherEvent.startTime.substring(11, 13)) + 8} to {parseInt(otherEvent.endTime.substring(11, 13)) + 8} </Text>)}
-</View>
-<View>
-    <Text style={styles.header}> You will be busy on:  </Text>
-    {events.map((event) => <Text key="{event}" style={styles.body} > {event.day}, {parseInt(event.startTime.substring(11, 13)) + 8} to {parseInt(event.endTime.substring(11, 13)) + 8} </Text>)}
-</View>
-async function fetchOtherName() {
-    setRefreshing(true);
-    // Fetch name based on the provided email
-    let { data } = await supabase
-        .from('profiles')
-        .select("*")
-        .eq("email", email);
-
-    setOtherName(data);
-    setRefreshing(false);
-}
-const startTime_data = [
-        { label: '8 a.m.', value: '8' },
-        { label: '9 a.m.', value: '9' },
-        { label: '10 a.m.', value: '10' },
-        { label: '11 a.m.', value: '11' },
-        { label: '12 p.m.', value: '12' },
-        { label: '1 p.m.', value: '13' },
-        { label: '2 p.m.', value: '14' },
-        { label: '3 p.m.', value: '15' },
-        { label: '4 p.m.', value: '16' },
-        { label: '5 p.m.', value: '17' },
-        { label: '6 p.m.', value: '18' },
-        { label: '7 p.m.', value: '19' },
-        { label: '8 p.m.', value: '20' },
-        { label: '9 p.m.', value: '21' },
-        { label: '10 p.m.', value: '22' },
-    ];
-
-    const endTime_data = [
-        { label: '8 a.m.', value: '8' },
-        { label: '9 a.m.', value: '9' },
-        { label: '10 a.m.', value: '10' },
-        { label: '11 a.m.', value: '11' },
-        { label: '12 p.m.', value: '12' },
-        { label: '1 p.m.', value: '13' },
-        { label: '2 p.m.', value: '14' },
-        { label: '3 p.m.', value: '15' },
-        { label: '4 p.m.', value: '16' },
-        { label: '5 p.m.', value: '17' },
-        { label: '6 p.m.', value: '18' },
-        { label: '7 p.m.', value: '19' },
-        { label: '8 p.m.', value: '20' },
-        { label: '9 p.m.', value: '21' },
-        { label: '10 p.m.', value: '22' },
-    ];
-
-                <Dropdown
-                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={startTime_data}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? 'Select start time' : '...'}
-                    value={starttime} // this part
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={item => {
-                        setStartTime(item.value); // this part
-                        setIsFocus(false);
-                    }}
-                />
-                <Dropdown
-                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={endTime_data}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? 'Select end time' : '...'}
-                    value={endtime}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={item => {
-                        setEndTime(item.value);
-                        setIsFocus(false);
-                    }}
-                />
-*/
