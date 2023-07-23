@@ -1,17 +1,27 @@
 import { Tabs } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router"
+import { TouchableOpacity, View, Image, StyleSheet } from "react-native"
 
 export default function TabsScreen() {
+  const router = useRouter();
   return (
       <Tabs
         screenOptions={{
           headerStyle: {
-          backgroundColor: "#1D49A7",
+            backgroundColor: "white",
+            
           },
-          headerTintColor: "#ffe",
           headerTitleStyle: {
-          fontWeight: "bold"
+            fontWeight: "bold",
+            color: "black",
+            fontSize:40,
+            height:50,
+            marginTop:35,
+            marginLeft:10,
           },
+          headerShadowVisible: false,
+          headerTitleAlign:'left'
         }}
       >
         <Tabs.Screen 
@@ -29,3 +39,10 @@ export default function TabsScreen() {
       </Tabs>
   )
 }
+
+const styles = StyleSheet.create({
+  button: { 
+      alignItems: "right"
+  },
+})
+

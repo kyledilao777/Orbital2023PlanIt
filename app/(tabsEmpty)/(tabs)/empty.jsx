@@ -7,7 +7,7 @@ import { useState } from "react";
 export default function HomeScreen() {
     const [count, setCount] = useState(0);
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <View style={{ backgroundColor:"white", flex: 1, alignItems: 'center', justifyContent: 'center'}}>
             <Text style={styles.mainText}>You currently have no timetable.</Text>
             <Link href="../(newTable)/addTimetable">
                 <Button 

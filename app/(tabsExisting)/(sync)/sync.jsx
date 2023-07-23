@@ -13,6 +13,7 @@ export default function Sync() {
     const [userEmail, setUserEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
+    const [count, setCount] = useState(0);
   
 
     async function schedulePushNotification() {
@@ -31,8 +32,13 @@ export default function Sync() {
             .select('timetable_name')
             .eq("user_id", user.id);
 
-        
+
         setTblName(data[0].timetable_name)
+        
+        if (user.email === userEmail) {
+            setErrMsg("Unable to sync with yourself!");
+            return;
+        }
 
         const { error } = await supabase
             .from("syncRequests")
@@ -51,7 +57,11 @@ export default function Sync() {
             return;
         }
         
-        schedulePushNotification();
+        if (count === 0) {
+            schedulePushNotification();
+            setCount(1);
+        }
+        
         router.push({ pathname: "/syncRequest", params: { email: userEmail }});
         
     };
@@ -70,6 +80,7 @@ export default function Sync() {
                         placeholder="User's email"
                         placeholderTextColor='#9E9E9E'
                         autoCapitalize="none" />
+                    {errMsg !== "" && <Text style={{color:"red", marginLeft:41, paddingBottom:10,}}>{errMsg}</Text>}
                 </View>
                 <View style={styles.syncButton}>
                     <Button
@@ -78,6 +89,7 @@ export default function Sync() {
                         textColor='black'
                         style={{ backgroundColor: '#FADF70', paddingHorizontal: 25 }}
                     >Sync</Button>
+                    
                 </View>
             </View>
         </SafeAreaView>

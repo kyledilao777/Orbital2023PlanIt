@@ -6,24 +6,17 @@ export default function App() {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: "white",
-          
+        backgroundColor: "white",
         },
-        headerTitle: "Add New Timetable",
         headerTitleStyle: {
           fontWeight: "bold",
-          color: "black",
-          fontSize:40,
-          height:50,
-          marginTop:35,
-          marginLeft:10,
+          color:"black"
         },
-        headerShadowVisible: false,
-        headerTitleAlign:'left'
-      }}
+     }}
     >
     
     <Stack.Screen name ="(tabs)" options={{ headerShown: false }} />
+    <Stack.Screen name="(newTable)" options={{ headerTitle: "Add New Timetable" }} />
     </Stack>
   )
 }

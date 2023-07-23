@@ -6,44 +6,15 @@ import { useSearchParams } from "expo-router";
 import { useAuth } from "../../../contexts/auth";
 
 export default function Rejection() {
-    const { email } = useSearchParams();
-    const [name, setName] = useState('');
-    const [tblName, setTblName] = useState ('')
-    const [refreshing, setRefreshing] = useState(false);
-    const { user } = useAuth();
-
-    useEffect(() => {
-        async function fetchName() {
-            setRefreshing(true);
-            // Fetch events based on current user email
-            let { data } = await supabase
-                .from('profiles')
-                .select("first_name")
-                .eq("email", email);
-            
-            setRefreshing(false);
-
-            setName(data[0].first_name);
-            
-        }
-        
-        fetchName(); 
-    }, [email]);
-
-    const nameformatted = <Text style={{ fontWeight:"bold" }}>{name} ({email})</Text>;
+    const { email, name } = useSearchParams();
 
     return (
         <SafeAreaView style={{flex:1, backgroundColor:"white"}}>
             <View style={styles.container}>
-                <View>
-                    <Text style={styles.text}> 
-                        You have successfully sent a sync request to {nameformatted}.
-                    </Text>
-                    <Image style={styles.image} source={require('./images/greentick.png')}/>
-                    <Text style={styles.text}>
-                        We will notify you once your sync request has been accepted.
-                    </Text>
-                </View>
+                <Image style={styles.image}source={require('./images/rejected.png')} />
+                <Text style={styles.text}> 
+                    You have successfully rejected {"\n"} a sync request from {name}.
+                </Text>
             </View>
         </SafeAreaView>
     )
@@ -57,12 +28,12 @@ const styles = StyleSheet.create({
     text: {
         textAlign: 'center',
         fontSize: 23,
-        marginBottom: 50
+        marginBottom: 50,
+        fontWeight:"bold"
     },
     image:{
         height:200,
         width:200,
-        marginTop:-20,
         marginBottom:20,
         alignSelf:"center"
     },

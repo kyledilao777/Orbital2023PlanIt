@@ -20,7 +20,7 @@ export default function App() {
                   headerTitleAlign:'left'
             }}
         >
-        <Stack.Screen name ="addCommonSlot" options={{ headerShown:false }} />
+        <Stack.Screen name ="addCommonSlot" options={{ headerShown:false, backgroundColor:"white"}} />
         </Stack>
     );
 }

@@ -2,19 +2,16 @@ import { useState, useEffect } from "react";
 import { View, SafeAreaView } from "react-native";
 import { useSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
-import { Text, Button } from "react-native-paper";
+import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
 import { supabase } from "../../../lib/supabase";
 import { useAuth } from "../../../contexts/auth";
 import { genTimeBlock } from 'react-native-timetable';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useRouter } from "expo-router";
 
-
 export default function NewCommonSlot() {
-    const { email } = useSearchParams();
-    const [events, setEvents] = useState([]);
-    const [otherEvents, setOtherEvents] = useState([]);
-    const [freeSlots, setFreeSlots] = useState([]);
+    const { free } = useSearchParams();
+    const [selected, setSelected] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const { user } = useAuth();
     const [isFocus, setIsFocus] = useState(false);
@@ -22,6 +19,15 @@ export default function NewCommonSlot() {
     const [slot, setSlot] = useState(null);
     const router = useRouter();
     const [selectedTime, setSelectedTime] = useState('');
+    const [title, setTitle] = useState('');
+    const [errMsg, setErrMsg] = useState('');
+    const [errMsgDay, setErrMsgDay] = useState('');
+    const [errMsgSlot, setErrMsgSlot] = useState('');
+    const [location, setLocation] = useState('');
+    const [note, setNote] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [time, setTime] = useState(null);
+    // console.log(free);
 
     const day_data = [
         { label: 'Monday', value: 'MON' },
@@ -31,6 +37,16 @@ export default function NewCommonSlot() {
         { label: 'Friday', value: 'FRI' },
     ];
 
+    const duration = [];
+
+    for (let i = 1; i <= 10; i++) {
+        duration.push({
+            label: i.toString(),
+            value: i
+        });
+    }
+
+    /*
     useEffect(() => {
         async function fetchEvents() {
             setRefreshing(true);
@@ -156,12 +172,28 @@ export default function NewCommonSlot() {
         }
 
         fetchFreeSlots();
-    }, [email, events, otherEvents]);
+    }, [email, events, otherEvents]); */
 
     const handleAddEvent = async () => {
+        setErrMsg('');
+        if (title === '') {
+            setErrMsg('Event name cannot be empty')
+            return;
+        }
+        setErrMsgDay('');
+        if (day === null) {
+            setErrMsgDay('Day cannot be empty')
+            return;
+        }
+        setErrMsgSlot('');
+        if (slot === null) {
+            setErrMsgSlot('Slot cannot be empty')
+            return;
+        }
+        setLoading(true);
 
-        const startTime = genTimeBlock(day, slot.startTime);
-        const endTime = genTimeBlock(day, slot.endTime);
+        const startTime = genTimeBlock(day, selected.startTime);
+        const endTime = genTimeBlock(day, selected.endTime);
 
         const { data } = await supabase.from('timetables')
             .select("id")
@@ -172,154 +204,245 @@ export default function NewCommonSlot() {
         // need to use user.id
         const { error } = await supabase.from('events')
             .insert({
-                event_name: "test event name",
+                event_name: title,
                 user_id: user.id,
                 day,
                 startTime,
                 endTime,
-                location: "test location",
-                extra_descriptions: [],
+                location: location,
+                extra_descriptions: [note],
                 email: user.email,
                 timetable_id: table_id
             })
             .select();
 
         if (error != null) {
+            setLoading(false);
             console.log(error);
+            setErrMsg(error.message); // can only be string, so need .message
             return;
         }
+        setLoading(false);
         router.push('../../(tabsExisting)/existing');
     }
 
-    function splitTimeSlots(freeSlots) {
-        const splitSlots = [];
+    function convertToStream(free) {
+        const result = [];
+        const freeSlotsData = free.split("},{");
 
-        for (const slot of freeSlots) {
-            const num = slot.endTime - slot.startTime;
-            let slotStartTime = slot.startTime;
+        freeSlotsData[0] = freeSlotsData[0].replace("{", "");
+        freeSlotsData[freeSlotsData.length - 1] = freeSlotsData[freeSlotsData.length - 1].replace("}", "");
 
-            for (let j = 1; j <= num; j++) {
-                splitSlots.push({
-                    day: slot.day,
-                    startTime: slotStartTime,
-                    endTime: slotStartTime + 1,
-                });
+        for (let i = 0; i < freeSlotsData.length; i++) {
+            const { day, startTime, endTime } = JSON.parse(`{${freeSlotsData[i]}}`);
+            result.push({
+                day,
+                startTime,
+                endTime,
+            });
+        }
+        return result;
+    }
 
-                slotStartTime += 1;
+        const freeSlots = convertToStream(free);
+
+        function splitTimeSlots(freeSlots) {
+            const splitSlots = [];
+
+            for (const slot of freeSlots) {
+                const num = slot.endTime - slot.startTime;
+                // const num = Math.floor((slot.endTime - slot.startTime) / time);
+                let slotStartTime = slot.startTime;
+
+                for (let j = 1; j <= num; j++) {
+                    const projEndTime = slotStartTime + time;
+                    if (projEndTime > slot.endTime) {
+                        break;
+                    } else {
+                        splitSlots.push({
+                            day: slot.day,
+                            startTime: slotStartTime,
+                            endTime: projEndTime,
+                        });
+                    }
+                    slotStartTime += 1;
+                }
             }
+
+            return splitSlots;
         }
 
-        return splitSlots;
+        const splitSlots = splitTimeSlots(freeSlots);
+        const slot_data = splitSlots
+            .filter((freeS) => freeS.day === day) // Filter the slots based on selected day
+            .map((freeS) => ({
+                label: `${freeS.day}, ${freeS.startTime} to ${freeS.endTime}`,
+                value: `${freeS.day}, ${freeS.startTime} to ${freeS.endTime}`,
+                stored: freeS
+            }));
+
+        return (
+            <SafeAreaView style={{flex:1, backgroundColor:"white"}}>
+                <View style={{marginHorizontal:14}}>
+                    <Text style={styles.header}> Please choose a desired duration (hrs) for your new event. </Text>
+                </View>
+                <View style={styles.body}>
+                    <Dropdown
+                        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={duration}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isFocus ? 'Select duration...' : '...'}
+                        value={time}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={item => {
+                            setTime(item.value);
+                            setIsFocus(false);
+                        }}
+                    />
+                </View>
+                <View  style={{marginHorizontal:15}}>
+                    <Text style={styles.header}> Please fill in the details of your new event. </Text>
+                    <TextInput
+                            autoCapitalize='none'
+                            placeholder="Event Name"
+                            placeholderTextColor='#9E9E9E'
+                            textColor='black'
+                            value={title}
+                            onChangeText={setTitle}
+                            style={styles.inputSearchStyle}
+                        />
+                    {errMsg !== '' && <Text>{errMsg}</Text>}
+                    <View style={styles.secondbody}>
+                        <Dropdown
+                            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                            placeholderStyle={styles.placeholderStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
+                            inputSearchStyle={styles.inputSearchStyle}
+                            iconStyle={styles.iconStyle}
+                            data={day_data}
+                            search
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder={!isFocus ? 'Select day...' : '...'}
+                            value={day}
+                            onFocus={() => setIsFocus(true)}
+                            onBlur={() => setIsFocus(false)}
+                            onChange={item => {
+                                setDay(item.value);
+                                setIsFocus(false);
+                            }}
+                        />
+                        {errMsgDay !== '' && <Text>{errMsgDay}</Text>}
+                        <Dropdown
+                            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                            placeholderStyle={styles.placeholderStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
+                            inputSearchStyle={styles.inputSearchStyle}
+                            iconStyle={styles.iconStyle}
+                            data={slot_data}
+                            search
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder={!isFocus ? 'Select slot' : '...'}
+                            value={slot}
+                            onFocus={() => setIsFocus(true)}
+                            onBlur={() => setIsFocus(false)}
+                            onChange={item => {
+                                setSlot(item.value);
+                                setSelected(item.stored);
+                                setIsFocus(false);
+                            }}
+                        />
+                        {errMsgSlot !== '' && <Text>{errMsgSlot}</Text>}
+                    </View>
+                    <TextInput
+                        autoCapitalize='none'
+                        placeholder="Location"
+                        placeholderTextColor='#9E9E9E'
+                        textColor='black'
+                        value={location}
+                        onChangeText={setLocation}
+                        style={styles.inputSearchStyle}
+                    />
+                    <TextInput
+                        autoCapitalize='none'
+                        placeholder="Note (e.g. Remind Zac)"
+                        placeholderTextColor='#9E9E9E'
+                        textColor='black'
+                        value={note}
+                        onChangeText={setNote}
+                        style={styles.inputSearchStyle}
+                    />
+                    <View style={styles.button}>
+                        <Button
+                            onPress={handleAddEvent}
+                            textColor='black'
+                            mode='outlined'
+                        >Add a slot</Button>
+                        {loading && <ActivityIndicator />}
+                    </View>
+                </View>
+            </SafeAreaView>
+        )
     }
 
-    const splitSlots = splitTimeSlots(freeSlots);
-    const slot_data = splitSlots
-        .filter((free) => free.day === day) // Filter the slots based on selected day
-        .map((free) => ({
-            label: `${free.day}, ${free.startTime} to ${free.endTime}`,
-            value: free,
-        }));
+    const styles = StyleSheet.create({
+        header: {
+            width: "100%",
+            marginLeft: 10,
+            marginTop: 10,
+            marginBottom: 5,
+            justifyContent: "flex-start",
+            fontSize: 20,
+            fontWeight: "bold"
+        },
+        body: {
+            marginHorizontal:15
+        },
+        secondbody: {
+            marginHorizontal:5
+        },
+        inputSearchStyle: {
+            width: '95%',
+            height: 50,
+            backgroundColor: 'transparent',
+            marginTop: 0,
+            marginBottom: -2,
+            marginLeft: 10,
+            marginRight: 10,
+            fontSize: 20,
+        },
+        dropdown: {
+            margin: 0,
+            marginLeft: 5,
+            marginRight: 5,
+            height: 50,
+            borderBottomColor: 'gray',
+            borderBottomWidth: 0.5,
+        },
+        placeholderStyle: {
+            fontSize: 20,
+            color: '#9E9E9E',
+            marginLeft: 15
 
-    return (
-        <SafeAreaView>
-            <View>
-                <Text style={styles.header}> Choose your desired day:   </Text>
-                <Dropdown
-                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={day_data}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? 'Select day...' : '...'}
-                    value={day}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={item => {
-                        setDay(item.value);
-                        setIsFocus(false);
-                    }}
-                />
-            </View>
-            <View>
-                <Text style={styles.header}> Select a time for your new event:   </Text>
-                <Dropdown
-                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={slot_data}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? 'Select time' : '...'}
-                    value={slot}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={(item) => {
-                        setSlot(item.value);
-                        setIsFocus(false);
-                    }}
-                />
-            </View>
-
-            <View style={styles.button}>
-                <Button
-                    onPress={handleAddEvent}
-                    textColor='black'
-                    mode='outlined'
-                >Add a slot</Button>
-            </View>
-        </SafeAreaView>
-    )
-}
-
-const styles = StyleSheet.create({
-    header: {
-        width: "100%",
-        marginLeft: 10,
-        marginTop: 10,
-        justifyContent: "flex-start",
-        fontSize: 20,
-        fontWeight: "bold"
-    },
-    body: {
-        paddingLeft: 10,
-    },
-    inputSearchStyle: {
-        width: '100%',
-        height: 50,
-        backgroundColor: 'transparent',
-        marginTop: 0,
-        marginBottom: -2,
-        marginLeft: 0,
-        fontSize: 20,
-    },
-    dropdown: {
-        margin: 0,
-        marginLeft: 0,
-        marginRight: 0,
-        height: 50,
-        borderBottomColor: 'gray',
-        borderBottomWidth: 0.5,
-    },
-    placeholderStyle: {
-        fontSize: 20,
-        color: '#9E9E9E',
-        marginLeft: 15
-
-    },
-    selectedTextStyle: {
-        fontSize: 20,
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-});
+        },
+        selectedTextStyle: {
+            fontSize: 20,
+            marginLeft: 15,
+        },
+        button: {
+            marginTop: 30,
+            alignItems: 'center',
+            justifyContent: 'center',
+        }
+    });

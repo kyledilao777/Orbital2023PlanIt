@@ -4,7 +4,6 @@ import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
 import { supabase } from "../../../lib/supabase";
 import { useAuth } from "../../../contexts/auth";
 import { Link, useRouter } from "expo-router";
-import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function NewTimetable() {
     const [title, setTitle] = useState('');
@@ -37,7 +36,7 @@ export default function NewTimetable() {
     }
 
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ backgroundColor:"white", flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={styles.header}> Name your timetable:</Text>
             <TextInput style={styles.textInput} value={title} onChangeText={setTitle} />
             {errMsg !== '' && <Text>{errMsg}</Text>}

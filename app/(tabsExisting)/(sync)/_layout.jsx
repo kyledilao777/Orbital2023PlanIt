@@ -18,6 +18,7 @@ export default function App() {
         <Stack.Screen name ="syncRequest" options = {{ headerShown: false }} />
         <Stack.Screen name ="syncList" options = {{ headerShown: false }} />
         <Stack.Screen name ="syncHold" options = {{ headerShown: false }} />
+        <Stack.Screen name ="rejectionPage" options = {{ headerShown: false }} />
         </Stack>
     );
 }

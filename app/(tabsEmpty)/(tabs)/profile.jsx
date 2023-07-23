@@ -3,7 +3,6 @@ import { supabase } from "../../../lib/supabase";
 import { React, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Image, Alert } from 'react-native';
 import { useAuth } from "../../../contexts/auth";
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
@@ -96,7 +95,7 @@ export default function ProfileScreen() {
 
     return (
         <SafeAreaView style={styles.bigcontainer}>
-            <View style={styles.box}></View>
+            <View style={styles.secondcontainer}>
             <View style={styles.profile}>
                 {data.map((data) => <Image key="{data}" source={{ uri: data.photo_url }} style={styles.image}></Image>)}
             </View>
@@ -117,6 +116,7 @@ export default function ProfileScreen() {
             <View style={styles.buttons}>
                 <Button style={styles.buttonWrapper} labelStyle={{ fontSize:20 }} textColor="#6ba1c4" mode="contained" onPress={handleLogOutPress}> Log Out </Button>
                 <Button style={styles.buttonWrapper} labelStyle={{ fontSize:20 }} textColor="red" mode="contained" onPress={handleDeletePress}> Delete User </Button>
+            </View>
             </View>
         </SafeAreaView>
     )
@@ -143,9 +143,10 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     image:{
-        height:125,
-        width:125,
-        borderRadius: 100,
+        marginLeft:-200,
+        height:150,
+        width:150,
+        borderRadius: 50,
     },
     profile:{
         alignSelf: 'center',
@@ -165,10 +166,13 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         width:"75%"
     },
+    secondcontainer:{
+        marginTop:100,
+        marginLeft:-30,
+    },
     bigcontainer: {
         flex:1,
-        marginTop:150,
-        marginLeft:-30
+        backgroundColor:"white",
     },
     box: {
         marginTop:-150,
@@ -177,10 +181,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightblue'
     },
     buttonWrapper: {
-        marginLeft:40,
+        alignItems:"center",
         backgroundColor: "transparent"
     },
     buttons:{
         marginTop:20,
+        marginLeft:40,
     }
 });

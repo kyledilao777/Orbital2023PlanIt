@@ -8,6 +8,7 @@ import * as Notifications from 'expo-notifications';
 
 export default function SyncHold() {
     const [refreshing, setRefreshing] = useState(false);
+    const [count, setCount] = useState(0);
     const { user } = useAuth();
     const router = useRouter();
 
@@ -91,7 +92,7 @@ export default function SyncHold() {
             ? <Text style={styles.sentText}> You have no pending requests. </Text> 
             : sentStatus === "Accepted"
             ? accepted()
-            : <Text style={styles.sentText}> {"\n"}{sentToInfo}: {sentStatusFormat}{"\n"}  </Text> 
+            : <Text style={styles.sentText}> {sentToInfo}: {sentStatusFormat}{"\n"}  </Text> 
         )
     }
 
@@ -102,7 +103,7 @@ export default function SyncHold() {
 
         return (
             <View style={styles.pickWrapper}>
-                <Text style={styles.sentText}> {"\n"}{sentToInfo}: {sentStatusFormat}{"\n"}  </Text> 
+                <Text style={styles.sentText}> {sentToInfo}: {sentStatusFormat}{"\n"}  </Text> 
                 <TouchableOpacity style={styles.pickButton} onPress={handleOpenPress}>
                     <Text style={{fontSize:15, color:"#6ba1c4"}}> Common Slots </Text>
                 </TouchableOpacity>
@@ -121,8 +122,9 @@ export default function SyncHold() {
         });
     }
 
-    if (rcvName != 'null' && rcvStatus === "Pending") {
+    if (rcvName != 'null' && rcvStatus === "Pending" && count === 1) {
         schedulePushNotification();
+        setCount(1);
     }
 
     const handleDecision = () => {
@@ -154,17 +156,45 @@ export default function SyncHold() {
             );
         }
     
+        const rejectRequest = async () => {
+            const { error } = await supabase
+                .from(`syncRequests`)
+                .update({ status:"Rejected" })
+                .eq('sender', rcvEmail) 
+                
+            setRcvStatus("Rejected");
+            router.push({ pathname: "./rejectionPage", params: { email: rcvEmail, name:rcvName }})
+        }
+
+        const handleRejectPress = async () => {
+            Alert.alert(
+                `Reject Sync Request?`,
+                "",
+                [
+                    {
+                        text: "Confirm",
+                        onPress: () => rejectRequest(),
+                        style: "default",
+                    },
+                    {
+                        text: "Cancel",
+                        style: "destructive",
+                    },
+                ]
+            );
+        }
+
         return (
             <View style={styles.buttonContainer}>
                 <Text style ={styles.rcvText}> {rcvInfo} </Text>
                 <View style={styles.acceptWrapper}>
                     <TouchableOpacity style={styles.acceptButton} onPress={handleAcceptPress}>
-                        <Text style={styles.accept}> Accept </Text>
+                        <Image style={{height: 20, width:20,}} source={require('./images/accept.jpg')}/>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.rejectWrapper}>
-                    <TouchableOpacity style={styles.rejectButton} onPress={() => router.push("./syncList")}>
-                        <Text style={styles.reject}> Reject </Text>
+                    <TouchableOpacity style={styles.rejectButton} onPress={handleRejectPress}>
+                        <Image style={{height: 20, width:20,}} source={require('./images/reject.jpg')}/>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -182,27 +212,23 @@ export default function SyncHold() {
             : rcvStatus == "Pending"
             ? handleDecision()
             : rcvStatus != "Accepted" 
-            ? <Text style={styles.rcvText}> {"\n"}{rcvInfo}: {formatStatus("Rejected") } </Text> 
+            ? <Text style={styles.rcvText}> {rcvInfo}: {formatStatus("Rejected") } </Text> 
             : 
-            <View style={styles.pickWrapper}>
-                <Text style={styles.rcvText}> {"\n"}{rcvInfo}: {formatStatus("Accepted") } </Text> 
+            <View>
+                <Text style={styles.rcvText}> {rcvInfo}: {formatStatus("Accepted") } </Text> 
                     <TouchableOpacity style={styles.secondPickButton} onPress={handleOpenPress}>
                         <Text style={{fontSize:15, color:"#6ba1c4"}}> Common Slots </Text>
                     </TouchableOpacity>
             </View>
-            
     };
 
     return (
         <SafeAreaView style={{ flex:1, backgroundColor:"white" }}>
             <View style={styles.sentContainer}>
-                
                 <View style={styles.sentHeadWrapper}>
                     <Text style={styles.header}>
                         Status of requests sent
                     </Text>
-                </View>
-                <View style={styles.sentWrapper}>
                     {sentText()}
                 </View>
             </View>
@@ -211,8 +237,6 @@ export default function SyncHold() {
                     <Text style={styles.header}>
                         Status of requests received
                     </Text>
-                </View>
-                <View style={styles.rcvWrapper}>
                     {rcvText()}
                 </View>
             </View>
@@ -240,14 +264,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         color:"black",
-    },
-    sentWrapper:{
-        marginTop:10,
-        marginLeft:28,
-    },
-    rcvWrapper:{
-        marginTop:10,
-        marginLeft:28,
     },
     sentText: {
         fontSize: 15,
@@ -283,45 +299,14 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection:'row',
-        width:"50%",
-        marginLeft:25,
-        marginTop:10,
-        justifyContent:'space-around',
-
+        width:"100%",
     },
     acceptWrapper:{
         flex:1,
-        paddingVertical:10,
-        paddingHorizontal:10,
-        backgroundColor: "#00b221",
-        borderRadius:20,
     },
     rejectWrapper:{
         flex:1,
-        marginLeft:10,
-        paddingHorizontal:10,
-        paddingVertical:10,
-        backgroundColor: "red",
-        borderRadius:20,
-
-    },
-    acceptButton: {
-        justifyContent: "flex-start"
-    },
-    rejectButton: {
-        justifyContent: "flex-end"
-    },
-    accept: {
-        marginLeft: 5,
-        color:"white", 
-        fontSize:20,
-        fontWeight: "bold", 
-    },
-    reject: {
-        marginLeft: 8,
-        color:"white", 
-        fontSize:20,
-        fontWeight: "bold", 
+        marginLeft:-90,
     },
     pickButton: {
         marginTop:-10,
@@ -330,5 +315,5 @@ const styles = StyleSheet.create({
     secondPickButton: {
         marginTop:5,
         marginLeft:8,
-    }
+    },
 })

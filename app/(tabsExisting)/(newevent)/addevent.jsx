@@ -1,13 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { SafeAreaView, View, StyleSheet } from "react-native";
 import { Text, TextInput, Button, ActivityIndicator } from "react-native-paper";
 import { supabase } from "../../../lib/supabase";
 import { useAuth } from "../../../contexts/auth";
 import { useRouter } from "expo-router";
 import { genTimeBlock } from 'react-native-timetable';
 import { Dropdown } from 'react-native-element-dropdown';
-import OneSignal from 'react-onesignal';
 
 export default function NewEvent() {
     const [title, setTitle] = useState('');
@@ -101,9 +100,9 @@ export default function NewEvent() {
             .insert({
                 event_name: title,
                 user_id: user.id,
-                day,
-                startTime,
-                endTime,
+                day: day,
+                startTime: startTime,
+                endTime: endTime,
                 location: location,
                 extra_descriptions: [ note ],
                 email: user.email,
@@ -121,19 +120,23 @@ export default function NewEvent() {
         router.push('../existing'); // auto push back to the root page
     }
 
-    return <View style={styles.container}>
-        <Text style={styles.header}> Please fill in the details of your new event. </Text>
-        <TextInput 
-            autoCapitalize='none'
-            placeholder="Event Name"
-            placeholderTextColor='#9E9E9E'
-            textColor='black'
-            value={title} 
-            onChangeText={setTitle} 
-            style={styles.inputSearchStyle}
-        />
+    return <SafeAreaView style={{flex:1, backgroundColor:"white"}}>
+        <View style={{marginHorizontal:20, marginTop:100}}>
+            <Text style={styles.header}> Please fill in the details of your new event. </Text>
+        </View>
+        <View style={{marginHorizontal:20,}}>
+            <TextInput 
+                autoCapitalize='none'
+                placeholder="Event Name"
+                placeholderTextColor='#9E9E9E'
+                textColor='black'
+                value={title} 
+                onChangeText={setTitle} 
+                style={styles.inputSearchStyle}
+            />
+        </View>
         {errMsg !== '' && <Text>{errMsg}</Text>}
-        <View>
+        <View style={{marginHorizontal:20,}}>
             <Dropdown
                 style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
                 placeholderStyle={styles.placeholderStyle}
@@ -195,6 +198,7 @@ export default function NewEvent() {
                 }}
             />
         </View>
+        <View style={{marginHorizontal:20,}}>
         <TextInput 
             autoCapitalize='none'
             placeholder="Location"
@@ -204,6 +208,8 @@ export default function NewEvent() {
             onChangeText={setLocation} 
             style={styles.inputSearchStyle}
         />
+        </View>
+        <View style={{marginHorizontal:20,}}>
         <TextInput 
             autoCapitalize='none'
             placeholder="Note (e.g. Remind Zac)"
@@ -212,16 +218,18 @@ export default function NewEvent() {
             value={note} 
             onChangeText={setNote}
             style={styles.inputSearchStyle}
-        />        
-        <Button 
-            style={styles.submit} 
-            onPress={handleSubmit}
-            textColor='black'
-            mode='contained'
-        >Submit</Button>
-        {loading && <ActivityIndicator />}
-        
-    </View>;
+        />    
+        </View>    
+        <View style={{marginLeft:20,}}>
+            <Button 
+                style={styles.submit} 
+                onPress={handleSubmit}
+                textColor='black'
+                mode='contained'
+            >Submit</Button>
+            {loading && <ActivityIndicator />}
+        </View>
+    </SafeAreaView>;
 }
 
 //<Button onPress={handleGoBack}>Go back</Button>
@@ -236,8 +244,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         marginTop:-160,
-        marginLeft:20,
-        marginRight:20
+        backgroundColor: "white"
     },
     inputSearchStyle:{
         width: '100%',

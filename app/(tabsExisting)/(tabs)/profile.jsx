@@ -3,7 +3,6 @@ import { supabase } from "../../../lib/supabase";
 import { React, useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Image, Alert } from 'react-native';
 import { useAuth } from "../../../contexts/auth";
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
@@ -144,10 +143,10 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     image:{
-        alignSelf:"center",
-        height:125,
-        width:125,
-        borderRadius: 100,
+        marginLeft:-200,
+        height:150,
+        width:150,
+        borderRadius: 50,
     },
     profile:{
         alignSelf: 'center',
@@ -169,6 +168,7 @@ const styles = StyleSheet.create({
     },
     secondcontainer:{
         marginTop:100,
+        marginLeft:-30,
     },
     bigcontainer: {
         flex:1,
@@ -186,5 +186,6 @@ const styles = StyleSheet.create({
     },
     buttons:{
         marginTop:20,
+        marginLeft:40,
     }
 });
